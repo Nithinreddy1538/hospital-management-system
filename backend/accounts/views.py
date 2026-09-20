@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from django.db import transaction
 from .models import UserProfile, PatientAssignment
 from .serializers import UserSerializer, PatientRegisterSerializer, RecruitStaffSerializer, PatientAssignmentSerializer
 from accounts.permissions import IsAdmin, IsClinicalStaff
@@ -190,14 +191,22 @@ class RecruitStaffView(APIView):
     permission_classes = [IsAdmin]
 
     def post(self, request):
-        serializer = RecruitStaffSerializer(data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
+        try:
+            serializer = RecruitStaffSerializer(data=request.data)
+            if not serializer.is_valid():
+                return Response(serializer.errors, status=400)
+
+            with transaction.atomic():
+                user = serializer.save()
+                ensure_user_profile_linkage(user)
+                user = User.objects.select_related("profile").get(id=user.id)
+
             return Response({
                 "message": f"Successfully created {user.get_full_name()} as {request.data.get('role')}.",
                 "user": UserSerializer(user).data,
             }, status=201)
-        return Response(serializer.errors, status=400)
+        except Exception as e:
+            return Response({"error": str(e)}, status=400)
 
 
 class MeView(APIView):

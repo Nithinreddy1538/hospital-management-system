@@ -8,12 +8,12 @@ function Settings() {
   const [settings, setSettings] = useState({
     hospitalName: "CarePulse AI Smart Hospital",
     contactEmail: "admin@hospital.com",
-    contactPhone: "+1 (800) 427-3785",
+    contactPhone: "+91 (0) 98765 43210",
     emergencyAlerts: true,
     emailNotifications: true,
     autoBackup: true,
     sessionTimeout: "30",
-    timezone: "UTC-5 (Eastern Time)",
+    timezone: "UTC+5:30 (India/IST)",
   });
 
   const [message, setMessage] = useState("");
@@ -149,7 +149,7 @@ function Settings() {
         {/* SECTION 2: CLINICAL AUTOMATIONS & ALERTS */}
         <div className="admin-form-card">
           <h2>🔔 Telemetry, Emergency & Alert Preferences</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "18px" }}>
+          <div className="admin-form-grid">
             <div
               style={{
                 background: "#f8fafc",

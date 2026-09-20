@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import authService from "../../services/auth";
+import { LOCAL_API_URL, RENDER_API_URL, getActiveApiUrl, setActiveApiUrl } from "../../services/api";
 import "../Login.css";
 
 const PORTAL_ROLES = [
@@ -27,6 +28,7 @@ export default function Login({ portalTitle = "", defaultRole = "" }) {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [activeApi, setActiveApi] = useState(getActiveApiUrl());
 
   // Check if query param preset role exists, to select the tab without auto-filling credentials
   useEffect(() => {
@@ -282,6 +284,63 @@ export default function Login({ portalTitle = "", defaultRole = "" }) {
               )}
             </button>
           </form>
+
+          {/* CLOUD / LOCAL BACKEND SELECTOR STRIP */}
+          <div
+            className="backend-selector-strip"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: "16px",
+              padding: "9px 14px",
+              background: "rgba(240, 249, 255, 0.85)",
+              border: "1px solid #bae6fd",
+              borderRadius: "12px",
+              fontSize: "11.5px",
+              color: "#0369a1",
+              boxShadow: "0 2px 8px rgba(186, 230, 253, 0.2)"
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+              <span
+                style={{
+                  width: "8px",
+                  height: "8px",
+                  borderRadius: "50%",
+                  background: activeApi.includes("onrender.com") ? "#10b981" : "#0284c7",
+                  display: "inline-block",
+                  boxShadow: activeApi.includes("onrender.com") ? "0 0 8px #10b981" : "0 0 8px #38bdf8"
+                }}
+              ></span>
+              <span style={{ fontWeight: 700, color: "#475569" }}>Target API:</span>
+              <span style={{ color: "#0284c7", fontWeight: 800 }}>
+                {activeApi.includes("onrender.com") ? "🌐 Render Cloud" : "💻 Local Django"}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                const nextUrl = activeApi.includes("onrender.com") ? LOCAL_API_URL : RENDER_API_URL;
+                setActiveApiUrl(nextUrl);
+                setActiveApi(nextUrl);
+              }}
+              style={{
+                background: "#ffffff",
+                border: "1px solid #7dd3fc",
+                borderRadius: "8px",
+                padding: "4px 10px",
+                fontSize: "11px",
+                fontWeight: 700,
+                color: "#0284c7",
+                cursor: "pointer",
+                transition: "all 0.2s ease"
+              }}
+              title="Click to toggle between Render Cloud and Local server"
+            >
+              Use {activeApi.includes("onrender.com") ? "Local (8000)" : "Render Cloud"}
+            </button>
+          </div>
 
           <div className="auth-card-footer">
             <span>New patient seeking healthcare enrollment?</span>

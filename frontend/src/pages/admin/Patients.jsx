@@ -165,8 +165,14 @@ export default function Patients() {
   // STATS MEMO
   const stats = useMemo(() => {
     const total = patients.length;
-    const male = patients.filter((p) => p.gender === "Male").length;
-    const female = patients.filter((p) => p.gender === "Female").length;
+    const male = patients.filter((p) => {
+      const g = (p.gender || "").trim().toLowerCase();
+      return g === "male" || g === "m";
+    }).length;
+    const female = patients.filter((p) => {
+      const g = (p.gender || "").trim().toLowerCase();
+      return g === "female" || g === "f";
+    }).length;
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -260,14 +266,7 @@ export default function Patients() {
       )}
 
       {/* 4 STATS METRIC CARDS */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
-          gap: "16px",
-          marginBottom: "24px",
-        }}
-      >
+      <div className="admin-stats-grid">
         <div className="admin-stat-card">
           <div className="admin-stat-icon">👥</div>
           <div className="admin-stat-info">

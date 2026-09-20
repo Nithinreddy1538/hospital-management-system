@@ -53,13 +53,13 @@ function Doctors() {
 
     try {
       const doctorData = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        specialization: formData.specialization,
-        phone: formData.phone,
-        email: formData.email,
-        experience: Number(formData.experience),
-        room_number: formData.room_number,
+        first_name: (formData.first_name || "").trim(),
+        last_name: (formData.last_name || "").trim(),
+        specialization: (formData.specialization || "General Physician").trim(),
+        phone: (formData.phone || "").trim(),
+        email: (formData.email || "").trim().toLowerCase(),
+        experience: parseInt(formData.experience, 10) || 1,
+        room_number: (formData.room_number || "").trim(),
       };
 
       // EDIT DOCTOR
@@ -79,15 +79,15 @@ function Doctors() {
           return;
         }
         await api.post("accounts/recruit-staff/", {
-          first_name: formData.first_name,
-          last_name: formData.last_name,
-          email: formData.email,
+          first_name: (formData.first_name || "").trim(),
+          last_name: (formData.last_name || "").trim(),
+          email: (formData.email || "").trim().toLowerCase(),
           password: formData.password,
           role: "DOCTOR",
-          phone: formData.phone,
-          specialization: formData.specialization,
-          experience: Number(formData.experience),
-          room_number: formData.room_number,
+          phone: (formData.phone || "").trim(),
+          specialization: (formData.specialization || "General Physician").trim(),
+          experience: parseInt(formData.experience, 10) || 1,
+          room_number: (formData.room_number || "").trim(),
         });
         alert("Doctor and login account created successfully!");
       }
@@ -283,7 +283,7 @@ function Doctors() {
       </div>
 
       {/* 4 STATS METRIC SUMMARY */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" }}>
+      <div className="admin-stats-grid">
         <div className="doctor-stat-card" style={{ background: "#ffffff", padding: "18px 22px", borderRadius: "16px", border: "1.5px solid rgba(186, 230, 253, 0.8)", boxShadow: "0 4px 14px rgba(148, 163, 184, 0.08)" }}>
           <span style={{ fontSize: "11px", fontWeight: 800, color: "#64748b", textTransform: "uppercase" }}>Total Specialists</span>
           <div style={{ fontSize: "28px", fontWeight: 800, color: "#0f172a", marginTop: "4px" }}>{doctors.length}</div>

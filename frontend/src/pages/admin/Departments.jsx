@@ -194,7 +194,7 @@ function Departments() {
       )}
 
       {/* 4 STATS METRIC SUMMARY */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" }}>
+      <div className="admin-stats-grid">
         <div className="admin-stat-card">
           <div className="admin-stat-icon">🏢</div>
           <div className="admin-stat-info">

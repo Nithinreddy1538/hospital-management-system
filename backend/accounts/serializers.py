@@ -76,13 +76,13 @@ class RecruitStaffSerializer(serializers.Serializer):
     phone = serializers.CharField(max_length=20)
     # Doctor specific fields
     specialization = serializers.CharField(required=False, allow_blank=True, default="General Physician")
-    experience = serializers.IntegerField(required=False, default=1)
+    experience = serializers.IntegerField(required=False, default=1, allow_null=True)
     room_number = serializers.CharField(required=False, allow_blank=True, default="")
     # Staff / Nurse specific fields
-    salary = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, default=35000.00)
-    joining_date = serializers.DateField(required=False, default=date.today)
+    salary = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, default=35000.00, allow_null=True)
+    joining_date = serializers.DateField(required=False, default=date.today, allow_null=True)
     # Patient specific fields
-    age = serializers.IntegerField(required=False, default=30)
+    age = serializers.IntegerField(required=False, default=30, allow_null=True)
     gender = serializers.CharField(required=False, default="Other")
     address = serializers.CharField(required=False, allow_blank=True, default="Hospital Registered Patient")
 
@@ -114,18 +114,18 @@ class RecruitStaffSerializer(serializers.Serializer):
                     first_name=validated_data['first_name'],
                     last_name=validated_data['last_name'],
                     specialization=validated_data.get('specialization', 'General Physician') or 'General Physician',
-                    phone=validated_data['phone'],
+                    phone=str(validated_data['phone'])[:15],
                     email=email,
-                    experience=validated_data.get('experience', 1),
-                    room_number=validated_data.get('room_number', '')
+                    experience=int(validated_data.get('experience') or 1),
+                    room_number=str(validated_data.get('room_number', ''))[:20] if validated_data.get('room_number') else ''
                 )
             else:
                 doctor.first_name = validated_data['first_name']
                 doctor.last_name = validated_data['last_name']
                 doctor.specialization = validated_data.get('specialization', doctor.specialization) or doctor.specialization
-                doctor.phone = validated_data['phone']
-                doctor.experience = validated_data.get('experience', doctor.experience)
-                doctor.room_number = validated_data.get('room_number', doctor.room_number)
+                doctor.phone = str(validated_data['phone'])[:15]
+                doctor.experience = int(validated_data.get('experience') or doctor.experience or 1)
+                doctor.room_number = str(validated_data.get('room_number', doctor.room_number or ''))[:20]
                 doctor.save()
             profile.doctor = doctor
         elif role == 'NURSE':
@@ -135,25 +135,25 @@ class RecruitStaffSerializer(serializers.Serializer):
                     first_name=validated_data['first_name'],
                     last_name=validated_data['last_name'],
                     role='Nurse',
-                    phone=validated_data['phone'],
+                    phone=str(validated_data['phone'])[:15],
                     email=email,
-                    salary=validated_data.get('salary', 35000.00),
-                    joining_date=validated_data.get('joining_date', date.today())
+                    salary=float(validated_data.get('salary') or 35000.00),
+                    joining_date=validated_data.get('joining_date') or date.today()
                 )
             else:
                 nurse.first_name = validated_data['first_name']
                 nurse.last_name = validated_data['last_name']
-                nurse.phone = validated_data['phone']
-                nurse.salary = validated_data.get('salary', nurse.salary)
+                nurse.phone = str(validated_data['phone'])[:15]
+                nurse.salary = float(validated_data.get('salary') or nurse.salary or 35000.00)
                 nurse.save()
             profile.staff = nurse
         elif role == 'PATIENT':
             patient = Patient.objects.create(
                 first_name=validated_data['first_name'],
                 last_name=validated_data['last_name'],
-                age=validated_data.get('age', 30),
+                age=int(validated_data.get('age') or 30),
                 gender=validated_data.get('gender', 'Other'),
-                phone=validated_data['phone'],
+                phone=str(validated_data['phone'])[:15],
                 address=validated_data.get('address', 'Hospital Registered Patient')
             )
             profile.patient = patient
@@ -163,6 +163,7 @@ class RecruitStaffSerializer(serializers.Serializer):
             user.save(update_fields=['is_staff', 'is_superuser'])
 
         profile.save()
+        user.profile = profile
         return user
 
 
