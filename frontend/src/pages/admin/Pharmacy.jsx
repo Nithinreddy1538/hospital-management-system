@@ -74,7 +74,7 @@ function Pharmacy() {
 
       if (medRes.status === "rejected" && rxRes.status === "rejected") {
         setErrorDetail(
-          "Backend API connection failed (127.0.0.1:8000). Please ensure the Django development server is running."
+          "Backend API connection failed. Please ensure the Django development server is running."
         );
       }
     } catch (error) {
