@@ -96,6 +96,12 @@ export default function PatientRegister() {
 
   return (
     <div className="register-page">
+      {/* NAVIGATION ARROW TO HOME */}
+      <Link to="/" className="back-to-home-link" title="Return to CarePulse Home">
+        <span className="back-arrow-icon">←</span>
+        <span>Back to Home</span>
+      </Link>
+
       <div className="register-container">
         {/* HEADER */}
         <div className="register-header">
